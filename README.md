@@ -1,80 +1,93 @@
-# Shopify Orders to Google Sheets Sync
+# Shopify Orders → Google Sheets Sync (GraphQL Edition)
 
-A robust Google Apps Script for automated, hourly synchronization of Shopify orders into a Google Spreadsheet. This script uses the Shopify GraphQL Admin API for high performance and includes features like historical backfill, marketing attribution (UTM) tracking, and self-healing automation.
+A high-performance, open-source Google Apps Script designed to synchronize Shopify order data into Google Sheets for advanced reporting, BI, and historical archiving.
 
-## 🚀 Key Features
+This script uses the **Shopify GraphQL Admin API**, which allows for more efficient data fetching, deep marketing attribution capture, and better handling of large data sets compared to the older REST API.
 
-- **Automated Hourly Sync**: Automatically fetches new and updated orders every 30 minutes.
-- **Full Historical Backfill**: Ability to pull historical data starting from a custom date.
-- **Marketing Attribution**: Captures UTM parameters (`source`, `medium`, `campaign`, etc.) and customer journey data (first/last visit).
-- **Customer Insights**: Syncs customer lifetime spend, order counts, and geographic data.
-- **Self-Healing Triggers**: Automatically recreates the background trigger if it's ever deleted.
-- **Reliability & Performance**:
-  - Handles Shopify API rate limiting (429 errors) and throttling.
-  - Implements script locking to prevent concurrent execution conflicts.
-  - Automatic pagination for large data sets.
-  - Intelligent bookmarking to prevent data gaps or overlaps.
-- **Detailed Logging**: Dedicated `Orders_Log` sheet to monitor sync status and debug errors.
+---
 
-## 🛠️ Setup Instructions
+## ✨ Features
 
-### 1. Shopify API Configuration
-1. Go to your Shopify Admin -> **Settings** -> **Apps and sales channels**.
-2. Click **Develop apps** -> **Create an app**.
-3. Under **Configuration**, select **Admin API integration**.
-4. Enable the following **Admin API scopes**:
-   - `read_orders`
-   - `read_customers` (optional, for enriched customer data)
-5. Install the app and copy the **Admin API access token**.
+- **🚀 High Performance**: Uses GraphQL to fetch only the fields you need, reducing payload size and execution time.
+- **📈 Marketing Attribution**: Captures detailed UTM parameters (`source`, `medium`, `campaign`, etc.) and Customer Journey data (first/last visit).
+- **🔄 Smart Syncing**: 
+    - **Initial Backfill**: Pulls historical data from a custom start date.
+    - **Incremental Updates**: Automatically picks up new and updated orders since the last successful run.
+    - **Deduplication**: Maps Shopify IDs to spreadsheet rows to update existing records instead of creating duplicates.
+- **🛡️ Resilience & Reliability**:
+    - **Rate Limit Handling**: Automatically retries on HTTP 429 and GraphQL `THROTTLED` errors.
+    - **Timeout Prevention**: Gracefully pauses and saves state if the script nears the Google Apps Script 6-minute execution limit.
+    - **Concurrency Locking**: Prevents race conditions by ensuring only one sync instance runs at a time.
+- **🤖 Self-Healing Automation**: Automatically monitors and recreates background triggers if they are accidentally removed.
+- **📝 Detailed Logging**: Maintains an `Orders_Log` sheet for transparency on sync status, API costs, and errors.
 
-### 2. Google Sheets Setup
+---
+
+## 🛠️ Installation & Setup
+
+### 1. Create a Shopify Custom App
+1. Log in to your Shopify Admin.
+2. Navigate to **Settings** > **Apps and sales channels** > **Develop apps**.
+3. Click **Create an app** and give it a name (e.g., "Google Sheets Sync").
+4. Click **Configure Admin API scopes** and enable:
+    - `read_orders`
+    - `read_customers`
+5. Click **Install app** and copy your **Admin API access token**.
+
+### 2. Prepare the Google Sheet
 1. Create a new Google Spreadsheet.
-2. Go to **Extensions** -> **Apps Script**.
-3. Delete any code in `Code.gs` and paste the provided script.
-4. Update the `CONFIG` block at the top of the script:
-   ```javascript
-   var CONFIG = {
-     SHOP:             "your-shop-subdomain", // e.g., "my-store" (not my-store.myshopify.com)
-     ACCESS_TOKEN:     "shpat_xxxxxxxxxxxx", // Your Shopify Admin API Token
-     API_VERSION:      "2026-01",            // Keep as is or update to latest
-     SHEET_NAME:       "Shopify Orders",     // Destination sheet name
-     LOG_SHEET_NAME:   "Orders_Log",         // Log sheet name
-     START_DATE:       "2022-01-01T00:00:00Z", // Data start date
-     TIMEZONE:         "America/New_York",   // Your timezone
-     // ... other settings
-   };
-   ```
-5. Click **Save** and then **Run** -> `onOpen` to initialize the menu.
+2. Go to **Extensions** > **Apps Script**.
+3. Rename the default file to `Code.gs` and paste the provided script.
+4. Update the `CONFIG` object at the top of the script:
+    - `SHOP`: Your store subdomain (e.g., `my-store`).
+    - `ACCESS_TOKEN`: Your Shopify API token.
+    - `START_DATE`: The ISO date to start syncing from (e.g., `2023-01-01T00:00:00Z`).
+    - `TIMEZONE`: Your local timezone (e.g., `America/Los_Angeles`).
 
 ### 3. Initialize the Sync
-1. Refresh your Google Sheet. You should see a new **Shopify Orders** menu.
-2. Select **Shopify Orders** -> **⏰ Create 30-min Trigger** to start automation.
-3. Select **Shopify Orders** -> **▶ Run Order Sync** to perform the initial sync.
+1. In the Apps Script editor, click **Save**.
+2. Refresh your Google Spreadsheet.
+3. You will see a new menu: **Shopify Orders**.
+4. Run **Shopify Orders** > **⏰ Create 30-min Trigger**. (You'll need to authorize the script).
+5. Run **Shopify Orders** > **▶ Run Order Sync** to start the first data pull.
 
-## 📋 Data Captured
+---
 
-The script populates columns including:
-- **Order Details**: ID, Number, Dates (Created, Updated, Cancelled), Statuses.
-- **Financials**: Gross Price, Total Price, Subtotal, Taxes, Discounts, Shipping, Refunds.
-- **Customer**: ID, Email, Name, Order Count, Lifetime Spend, City, Country.
-- **Items**: Total items, SKU list.
-- **Marketing (UTM)**: Source, Medium, Campaign, Content, Term for both First and Last visits.
-- **Journey**: Days to conversion, Landing page, Referrer URL, Cart attributes.
+## 📊 Data Column Reference
 
-## 🔧 Maintenance & Utilities
+The script populates over 50 columns of data, grouped as follows:
 
-The **Shopify Orders** menu provides several tools:
-- **Run Order Sync**: Manually triggers a sync of the latest updates.
-- **Backfill Missed Orders**: A special function to recover orders in a specific historical window (useful for fixing gaps).
-- **Reset Sync Memory**: Clears the "last sync" bookmark so the next run starts fresh from your `START_DATE`.
-- **View Configuration & Status**: Shows current settings and the timestamp of the last successful sync.
+| Group | Key Fields |
+| :--- | :--- |
+| **Order Info** | ID, Name, Created/Updated/Cancelled dates, Financial & Fulfillment status. |
+| **Financials** | Gross Price, Subtotal, Total, Discounts, Taxes, Shipping, Refunded amounts. |
+| **Customer** | Name, Email, Total orders, Lifetime spend, City, Country. |
+| **Items** | Total item count, SKU list (comma-separated). |
+| **Marketing** | UTM Source/Medium/Campaign, Referral URLs, Landing Pages (First & Last visit). |
+| **Metadata** | Cart Attributes (JSON), Promo codes, Discount types, App source. |
 
-## 🛡️ Applied Fixes (Change Log)
+---
 
-1. **Stop Backwards Drift**: The sync bookmark only updates when orders are actually found, preventing the pointer from moving forward during empty intervals.
-2. **Stop Leapfrogging**: Caps the sync bookmark at "now - 30 minutes" to ensure late-processing Shopify orders are never skipped.
-3. **Millisecond Hygiene**: Strips milliseconds from Shopify filter strings to comply with API search requirements.
-4. **Self-Healing Trigger**: The script checks for the existence of its own automation trigger every time it runs manually, recreating it if missing.
+## 🔧 Developer Guide & Logic
 
-## ⚖️ License
-MIT License. Use this script freely for your own Shopify store or for clients.
+### Sync Logic (The "Fixed" Approach)
+This script includes several critical fixes for common Apps Script sync issues:
+1. **Drift Prevention**: The `ORDER_LAST_SYNC` bookmark only updates if the sync actually finds data. This prevents the "updated_at" window from moving forward during empty periods, ensuring no order is ever missed.
+2. **The 30-Minute Gap**: We cap the sync bookmark at "current time minus 5-30 minutes." This accounts for the lag between an order being placed in Shopify and it becoming visible in the search index.
+3. **Batch Writing**: Rows are buffered in memory and written in batches (defined by `FLUSH_EVERY`) to minimize the number of API calls to the Google Sheets service.
+
+### Troubleshooting
+- **Missing Data**: Check the `Orders_Log` sheet. If you see "TIMEOUT" or "PAUSED," the script will automatically resume on the next 30-minute trigger.
+- **Authentication**: If you see 401 errors, your `ACCESS_TOKEN` is likely incorrect or expired.
+- **Permissions**: Ensure the script has permission to "Connect to an external service" and "Manage your spreadsheets."
+
+---
+
+## 🤝 Contributing
+Contributions are welcome! If you have suggestions for new data fields or performance improvements:
+1. Fork the project.
+2. Create your feature branch.
+3. Submit a Pull Request with a clear description of the change.
+
+## 📄 License
+This project is licensed under the **MIT License**. Use it freely for your business or clients.
