@@ -1,4 +1,9 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/anuragpras/Shopify-GSheets-Automator/main/download.svg" width="100%" alt="Shopify GSheets Automator Banner">
+</p>
+
 # Shopify Orders → Google Sheets Sync (GraphQL Edition)
+
 
 A high-performance, open-source Google Apps Script designed to synchronize Shopify order data into Google Sheets for advanced reporting, BI, and historical archiving.
 
