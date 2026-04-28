@@ -1,0 +1,69 @@
+<svg width="900" height="360" viewBox="0 0 900 360" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .bg { fill:#0f172a; }
+    .card { fill:#111827; stroke:#334155; stroke-width:2; rx:18; }
+    .title { fill:#ffffff; font:700 22px Arial; }
+    .text { fill:#cbd5e1; font:500 14px Arial; }
+    .small { fill:#94a3b8; font:500 12px Arial; }
+    .line { stroke:#38bdf8; stroke-width:4; stroke-linecap:round; stroke-dasharray:10 12; animation: dash 1.4s linear infinite; }
+    .pulse { animation:pulse 1.8s ease-in-out infinite; transform-origin:center; }
+    .float { animation:float 2.4s ease-in-out infinite; }
+    .delay1 { animation-delay:.3s; }
+    .delay2 { animation-delay:.6s; }
+    .delay3 { animation-delay:.9s; }
+    @keyframes dash { to { stroke-dashoffset:-44; } }
+    @keyframes pulse { 0%,100%{opacity:.5;transform:scale(1)} 50%{opacity:1;transform:scale(1.08)} }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+  </style>
+
+  <rect class="bg" width="900" height="360" rx="28"></rect>
+
+  <text x="450" y="42" text-anchor="middle" class="title">
+    Shopify Orders → Google Sheets Automated Sync
+  </text>
+  <text x="450" y="66" text-anchor="middle" class="small">
+    Historical backfill • Incremental updates • Retry handling • Self-healing trigger
+  </text>
+
+  <line class="line" x1="230" y1="175" x2="410" y2="175"></line>
+  <line class="line" x1="510" y1="175" x2="690" y2="175"></line>
+
+  <g class="float">
+    <rect class="card" x="55" y="115" width="180" height="120"></rect>
+    <text x="145" y="155" text-anchor="middle" class="title">Shopify</text>
+    <text x="145" y="183" text-anchor="middle" class="text">Orders API</text>
+    <text x="145" y="207" text-anchor="middle" class="small">GraphQL + Updated At</text>
+  </g>
+
+  <g class="float delay1">
+    <rect class="card" x="360" y="105" width="180" height="140"></rect>
+    <text x="450" y="145" text-anchor="middle" class="title">Apps Script</text>
+    <text x="450" y="174" text-anchor="middle" class="text">Batch Sync Engine</text>
+    <text x="450" y="198" text-anchor="middle" class="small">Retry • Cursor • Logs</text>
+    <text x="450" y="220" text-anchor="middle" class="small">30-min Trigger</text>
+  </g>
+
+  <g class="float delay2">
+    <rect class="card" x="665" y="115" width="180" height="120"></rect>
+    <text x="755" y="155" text-anchor="middle" class="title">Google Sheets</text>
+    <text x="755" y="183" text-anchor="middle" class="text">Shopify Orders</text>
+    <text x="755" y="207" text-anchor="middle" class="small">Updated, not duplicated</text>
+  </g>
+
+  <circle class="pulse" cx="295" cy="175" r="9" fill="#38bdf8"></circle>
+  <circle class="pulse delay1" cx="600" cy="175" r="9" fill="#22c55e"></circle>
+
+  <g>
+    <rect x="160" y="280" width="135" height="38" rx="19" fill="#1e293b" stroke="#475569"></rect>
+    <text x="227" y="304" text-anchor="middle" class="small">Backfill Recovery</text>
+
+    <rect x="325" y="280" width="135" height="38" rx="19" fill="#1e293b" stroke="#475569"></rect>
+    <text x="392" y="304" text-anchor="middle" class="small">Rate Limit Retry</text>
+
+    <rect x="490" y="280" width="135" height="38" rx="19" fill="#1e293b" stroke="#475569"></rect>
+    <text x="557" y="304" text-anchor="middle" class="small">Safe Bookmark</text>
+
+    <rect x="655" y="280" width="135" height="38" rx="19" fill="#1e293b" stroke="#475569"></rect>
+    <text x="722" y="304" text-anchor="middle" class="small">Trigger Healing</text>
+  </g>
+</svg>
