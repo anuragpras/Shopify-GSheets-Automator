@@ -3,6 +3,7 @@
 </p>
 
 # Shopify Orders → Google Sheets Sync (GraphQL Edition)
+<img width="1536" height="1024" alt="orders-img" src="https://github.com/user-attachments/assets/4bdf9cd2-eb0a-4ce3-900a-697eb8e56d61" />
 
 
 A high-performance, open-source Google Apps Script designed to synchronize Shopify order data into Google Sheets for advanced reporting, BI, and historical archiving.
